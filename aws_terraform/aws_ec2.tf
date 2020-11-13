@@ -30,10 +30,11 @@ resource "aws_instance" "ftps_server" {
   key_name                    = aws_key_pair.ftps_test.id
   subnet_id                   = aws_subnet.public-a.id
   associate_public_ip_address = true
-  iam_instance_profile = aws_iam_instance_profile.ad_profile.name
+  iam_instance_profile        = aws_iam_instance_profile.ad_profile.name
 
   vpc_security_group_ids = [
-    aws_security_group.ssh_rdp.id
+    aws_security_group.ssh_rdp.id,
+    aws_security_group.ftps.id
   ]
 
   tags = {
@@ -42,8 +43,12 @@ resource "aws_instance" "ftps_server" {
 }
 
 resource "aws_eip" "ftps_server" {
-  instance = aws_instance.ftps_server.id
-  vpc      = true
+  vpc = true
+}
+
+resource "aws_eip_association" "ftps_server" {
+  instance_id   = aws_instance.ftps_server.id
+  allocation_id = aws_eip.ftps_server.id
 }
 
 resource "aws_instance" "ftps_client" {
@@ -52,10 +57,11 @@ resource "aws_instance" "ftps_client" {
   key_name                    = aws_key_pair.ftps_test.id
   subnet_id                   = aws_subnet.public-a.id
   associate_public_ip_address = true
-  iam_instance_profile = aws_iam_instance_profile.ad_profile.name
+  iam_instance_profile        = aws_iam_instance_profile.ad_profile.name
 
   vpc_security_group_ids = [
-    aws_security_group.ssh_rdp.id
+    aws_security_group.ssh_rdp.id,
+    aws_security_group.ftps.id
   ]
 
   tags = {
@@ -64,8 +70,12 @@ resource "aws_instance" "ftps_client" {
 }
 
 resource "aws_eip" "ftps_client" {
-  instance = aws_instance.ftps_client.id
-  vpc      = true
+  vpc = true
+}
+
+resource "aws_eip_association" "ftps_client" {
+  instance_id   = aws_instance.ftps_client.id
+  allocation_id = aws_eip.ftps_client.id
 }
 
 # Output Param

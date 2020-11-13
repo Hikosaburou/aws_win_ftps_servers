@@ -32,24 +32,51 @@ resource "aws_security_group" "ssh_rdp" {
   }
 }
 
-/*
-resource "aws_security_group" "web" {
-  name        = "${var.pj-prefix}-web"
-  description = "Allow HTTP/HTTPS access"
+resource "aws_security_group" "ftps" {
+  name        = "${var.pj-prefix}-ftps"
+  description = "Allow FTPS"
   vpc_id      = aws_vpc.main.id
 
   ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    from_port = 20
+    to_port   = 21
+    protocol  = "tcp"
+    self      = true
   }
 
   ingress {
-    from_port   = 443
-    to_port     = 443
+    from_port   = 20
+    to_port     = 21
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = [var.my_ip]
+  }
+
+  ingress {
+    from_port   = 20
+    to_port     = 21
+    protocol    = "tcp"
+    cidr_blocks = ["${aws_eip.ftps_client.public_ip}/32"]
+  }
+
+  ingress {
+    from_port = 1025
+    to_port   = 65535
+    protocol  = "tcp"
+    self      = true
+  }
+
+  ingress {
+    from_port   = 1025
+    to_port     = 65535
+    protocol    = "tcp"
+    cidr_blocks = [var.my_ip]
+  }
+
+  ingress {
+    from_port   = 1025
+    to_port     = 65535
+    protocol    = "tcp"
+    cidr_blocks = ["${aws_eip.ftps_client.public_ip}/32"]
   }
 
   egress {
@@ -60,7 +87,6 @@ resource "aws_security_group" "web" {
   }
 
   tags = {
-    Name = "${var.pj-prefix}-web"
+    Name = "${var.pj-prefix}-ssh-rdp"
   }
 }
-*/
