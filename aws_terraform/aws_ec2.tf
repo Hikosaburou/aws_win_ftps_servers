@@ -61,7 +61,6 @@ resource "aws_instance" "ftps_client" {
 
   vpc_security_group_ids = [
     aws_security_group.ssh_rdp.id,
-    aws_security_group.ftps.id
   ]
 
   tags = {
